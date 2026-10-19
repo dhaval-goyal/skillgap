@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+env/
+
+# Data and caches (never store raw resume text or local cache)
+data/
+.cache/
+hf_cache/
+*.parquet
+*.arrow
+resumes/
+temp_inputs/
+
+# Model checkpoints & artifacts
+checkpoints/
+models_saved/
+runs/
+wandb/
+*.pt
+*.bin
+*.safetensors
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

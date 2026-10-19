@@ -1,0 +1,15 @@
+# Core Deep Learning & NLP
+torch
+transformers
+datasets
+evaluate
+seqeval
+accelerate
+
+# Baseline NLP
+spacy
+
+# Data manipulation & Utilities
+pandas
+numpy
+scikit-learn

@@ -1,0 +1,1 @@
+id,model,lr,epochs,batch_size,seed,val_precision,val_recall,val_f1,notes
