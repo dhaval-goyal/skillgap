@@ -1,0 +1,223 @@
+"""
+Multiple-choice quiz question bank for SkillGap assessment prototype.
+
+NOTE: This quiz is an academic prototype for self-assessment reflection.
+It is NOT a validated test of professional competence or job readiness.
+"""
+from typing import List, Dict, Any
+
+QUESTIONS: List[Dict[str, Any]] = [
+    # Python Questions (5)
+    {
+        "id": "py_01",
+        "skill": "Python",
+        "topic": "Variables and data types",
+        "question": "Which of the following creates an immutable sequence in Python?",
+        "options": [
+            "x = [1, 2, 3]",
+            "x = {1, 2, 3}",
+            "x = (1, 2, 3)",
+            'x = {"a": 1, "b": 2}',
+        ],
+        "correct_answer": "x = (1, 2, 3)",
+        "explanation": "Tuples in Python are defined with parentheses and are immutable sequences.",
+    },
+    {
+        "id": "py_02",
+        "skill": "Python",
+        "topic": "Lists and dictionaries",
+        "question": "How do you safely retrieve key 'skills' from dictionary `data` without KeyError if missing?",
+        "options": [
+            "data['skills']",
+            "data.get('skills', [])",
+            "data.pop('skills')",
+            "data.find('skills')",
+        ],
+        "correct_answer": "data.get('skills', [])",
+        "explanation": "The `.get()` method returns a default value instead of raising a KeyError.",
+    },
+    {
+        "id": "py_03",
+        "skill": "Python",
+        "topic": "Loops and conditionals",
+        "question": "What is the output of `[x * 2 for x in range(4) if x % 2 == 0]`?",
+        "options": [
+            "[0, 2, 4, 6]",
+            "[0, 4]",
+            "[2, 6]",
+            "[0, 2]",
+        ],
+        "correct_answer": "[0, 4]",
+        "explanation": "Even numbers in range(4) are 0 and 2. Multiplied by 2, they yield [0, 4].",
+    },
+    {
+        "id": "py_04",
+        "skill": "Python",
+        "topic": "Functions",
+        "question": "In Python, what does the `*args` syntax in a function definition accept?",
+        "options": [
+            "A variable number of positional arguments as a tuple",
+            "A variable number of keyword arguments as a dictionary",
+            "Exactly one required keyword argument",
+            "Only arguments of integer type",
+        ],
+        "correct_answer": "A variable number of positional arguments as a tuple",
+        "explanation": "`*args` collects arbitrary positional arguments into a tuple.",
+    },
+    {
+        "id": "py_05",
+        "skill": "Python",
+        "topic": "Error handling",
+        "question": "Which block in a Python try-except construct always runs regardless of exceptions?",
+        "options": [
+            "else",
+            "finally",
+            "catch",
+            "except",
+        ],
+        "correct_answer": "finally",
+        "explanation": "The `finally` block always executes, making it suitable for cleanup tasks.",
+    },
+    # SQL Questions (5)
+    {
+        "id": "sql_01",
+        "skill": "SQL",
+        "topic": "SELECT and WHERE",
+        "question": "Which SQL query retrieves only students with score > 80 from table `students`?",
+        "options": [
+            "SELECT * FROM students HAVING score > 80;",
+            "SELECT * FROM students WHERE score > 80;",
+            "WHERE score > 80 SELECT * FROM students;",
+            "SELECT students WHERE score > 80;",
+        ],
+        "correct_answer": "SELECT * FROM students WHERE score > 80;",
+        "explanation": "`WHERE` filters individual rows before grouping or aggregation.",
+    },
+    {
+        "id": "sql_02",
+        "skill": "SQL",
+        "topic": "Aggregation and GROUP BY",
+        "question": "Which query correctly calculates the average salary per department from `employees`?",
+        "options": [
+            "SELECT department, AVG(salary) FROM employees GROUP BY department;",
+            "SELECT department, MEAN(salary) FROM employees ORDER BY department;",
+            "SELECT department, SUM(salary) FROM employees WHERE department;",
+            "SELECT AVG(salary) FROM employees GROUP BY salary;",
+        ],
+        "correct_answer": "SELECT department, AVG(salary) FROM employees GROUP BY department;",
+        "explanation": "`AVG(salary)` combined with `GROUP BY department` aggregates per department.",
+    },
+    {
+        "id": "sql_03",
+        "skill": "SQL",
+        "topic": "Filtering grouped results with HAVING",
+        "question": "What is the primary reason to use `HAVING` instead of `WHERE` in SQL?",
+        "options": [
+            "HAVING filters individual rows before grouping",
+            "HAVING filters aggregated groups produced by GROUP BY",
+            "HAVING is required for all string comparisons",
+            "HAVING sorts query results in ascending order",
+        ],
+        "correct_answer": "HAVING filters aggregated groups produced by GROUP BY",
+        "explanation": "`WHERE` cannot filter on aggregate expressions; `HAVING` filters group results.",
+    },
+    {
+        "id": "sql_04",
+        "skill": "SQL",
+        "topic": "Joins",
+        "question": "Which join returns all left table rows and matching right table rows, filling missing with NULL?",
+        "options": [
+            "INNER JOIN",
+            "CROSS JOIN",
+            "LEFT JOIN",
+            "RIGHT JOIN",
+        ],
+        "correct_answer": "LEFT JOIN",
+        "explanation": "A `LEFT JOIN` preserves all rows from the left-hand table unconditionally.",
+    },
+    {
+        "id": "sql_05",
+        "skill": "SQL",
+        "topic": "Handling NULL values",
+        "question": "How do you check for missing/unknown values in an `email` column in SQL?",
+        "options": [
+            "WHERE email = NULL",
+            "WHERE email == NULL",
+            "WHERE email IS NULL",
+            "WHERE email IS EMPTY",
+        ],
+        "correct_answer": "WHERE email IS NULL",
+        "explanation": "SQL uses three-valued logic; NULL equality must be tested with `IS NULL`.",
+    },
+    # Power BI Questions (5)
+    {
+        "id": "pbi_01",
+        "skill": "Power BI",
+        "topic": "Power Query and data transformation",
+        "question": "What is the primary function of Power Query in Power BI?",
+        "options": [
+            "Extracting, transforming, and cleaning data before loading into the model",
+            "Hosting and scheduling cloud refreshes on Power BI Service",
+            "Creating complex machine learning neural networks",
+            "Designing page background themes and color schemes",
+        ],
+        "correct_answer": "Extracting, transforming, and cleaning data before loading into the model",
+        "explanation": "Power Query is the ETL tool in Power BI used to shape and clean raw data.",
+    },
+    {
+        "id": "pbi_02",
+        "skill": "Power BI",
+        "topic": "Relationships between tables",
+        "question": "In a standard Star Schema, what cardinality typically connects a Dimension to a Fact table?",
+        "options": [
+            "Many-to-Many",
+            "One-to-One",
+            "One-to-Many",
+            "Many-to-None",
+        ],
+        "correct_answer": "One-to-Many",
+        "explanation": "Primary keys in the Dimension table (One) connect to foreign keys in Fact table (Many).",
+    },
+    {
+        "id": "pbi_03",
+        "skill": "Power BI",
+        "topic": "Measures vs calculated columns",
+        "question": "What is the core difference between a DAX Measure and a Calculated Column?",
+        "options": [
+            "Calculated columns evaluate at query time; measures are stored in table rows",
+            "Measures evaluate dynamically based on visual filter context; columns evaluate during refresh",
+            "Measures can only use addition; calculated columns support all DAX functions",
+            "Calculated columns only exist in the service, not in desktop",
+        ],
+        "correct_answer": "Measures evaluate dynamically based on visual filter context; columns evaluate during refresh",
+        "explanation": "Measures compute on the fly using active filter context without consuming row memory.",
+    },
+    {
+        "id": "pbi_04",
+        "skill": "Power BI",
+        "topic": "Basic DAX concepts",
+        "question": "Which DAX function evaluates an expression within an altered or overridden filter context?",
+        "options": [
+            "SUM",
+            "CALCULATE",
+            "LOOKUPVALUE",
+            "RELATED",
+        ],
+        "correct_answer": "CALCULATE",
+        "explanation": "`CALCULATE` is the primary context-transition and filter-modification function in DAX.",
+    },
+    {
+        "id": "pbi_05",
+        "skill": "Power BI",
+        "topic": "Choosing visuals & report interpretation",
+        "question": "Which visual is most suitable for analyzing continuous revenue trends over monthly dates?",
+        "options": [
+            "Line Chart",
+            "Pie Chart",
+            "Card Visual",
+            "Treemap",
+        ],
+        "correct_answer": "Line Chart",
+        "explanation": "Line charts display continuous time-series data to show trends and progression.",
+    },
+]
