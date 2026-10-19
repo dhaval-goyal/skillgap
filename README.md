@@ -16,7 +16,7 @@ SkillGap is an educational and self-assessment NLP system designed to extract sk
 - `baseline/`: Training-split dictionary extraction and spaCy PhraseMatcher.
 - `model/`: DistilBERT model definition, training loop, and evaluation.
 - `inference/`: Entity extraction and span decoding from raw text.
-- `normalization/`: Mapping extracted spans to standardized skill taxonomies.
+- `normalization/`: Rule-based skill canonicalization (mapping surface aliases like `powerbi` to `Power BI`, handling whitespace/casing).
 - `gap/`: Skill gap computation against target requirements.
 - `assessment/`: Practice alignment and competency checks.
 - `app/`: Interactive interface for self-guided gap analysis.
