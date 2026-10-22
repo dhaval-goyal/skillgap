@@ -1,166 +1,227 @@
-# SkillGap: Skill Extraction & Gap Analysis
+# SkillGap AI: Skill Extraction & Gap Analysis
 
-SkillGap is an educational and self-assessment NLP system designed to extract skills from text using Named Entity Recognition (BIO tagging) and analyze gaps between demonstrated competencies and target career requirements.
+SkillGap AI is an educational self-assessment and NLP project designed to help learners explore skill gaps between their existing competencies and target career requirements.
 
-> **Disclaimer & Ethics:** This is an educational guidance tool, not a hiring or screening platform. It does not output hire/reject scores and does not store raw user resume text.
+The project combines research into **skill extraction using BIO-tagged Named Entity Recognition (NER)** with an interactive Streamlit dashboard for skill assessment, job-description analysis, gap visualization, and learning guidance.
 
-## Task & Dataset
+**[Live Demo — SkillGap AI](https://skillgap-ai-preview-xy5ybvuyh6xcpfpryeebdz.streamlit.app/)**
 
-- **Task:** Skill extraction using BIO sequence tagging (token classification).
-- **Dataset:** Hugging Face [`jjzha/skillspan`](https://huggingface.co/datasets/jjzha/skillspan), using the provided train, validation, and test splits.
-- **Approaches:**
-  1. **Baseline:** spaCy `PhraseMatcher`, constructed using skill phrases from the training split.
-  2. **Transformer:** Fine-tuned DistilBERT token-classification model.
+> **Disclaimer:** SkillGap is an educational and career-planning tool, not a hiring or screening platform. It does not generate hire/reject recommendations or claim to predict professional employability.
 
-## Repository Structure
+## Key Features
 
-- `preprocessing/`: Dataset loading, tokenization, and BIO label alignment.
-- `baseline/`: Training-split skill dictionary and spaCy PhraseMatcher.
-- `model/`: DistilBERT training, model checkpoints, and evaluation.
-- `inference/`: DistilBERT token classification inference (`SkillExtractor`) and BIO span decoding (`decode_bio_spans`).
-- `normalization/`: Rule-based skill canonicalization (`normalize_skill`, mapping aliases like `powerbi` to `Power BI`, whitespace/case standardization).
-- `gap/`: Skill gap calculation (`compute_skill_gap`), frequency ranking (`rank_skills_by_frequency`), and missing skill prioritization (`rank_missing_skills`).
-- `resources/`: Manually curated learning resource catalog (`get_resources`) for recommended skill learning materials.
-- `assessment/`: Skill quiz prototype (`get_questions`, `calculate_score`, `compare_confidence`) and confidence-gap comparison.
-- `skillgap_pipeline.py`: End-to-end integration pipeline orchestrating extraction, gap analysis, ranking, and learning resources.
-- `app/`: Interactive interface for self-guided gap analysis.
-- `experiments_log.csv`: Hyperparameter experiments and validation metrics.
+- **Skill assessment:** Evaluate configured skills using self-ratings, test scores, and project scores.
+- **Skill-gap analysis:** Compare assessed skill levels against a target score.
+- **Visual dashboard:** Display assessment results, proficiency levels, and skill gaps through charts.
+- **Job-description analysis:** Detect supported skill mentions using a fixed vocabulary and estimate their requirement status using rule-based heuristics.
+- **Actionable guidance:** Display recommendations based on identified skill gaps.
+- **CSV export:** Download assessment results for further analysis.
+- **NLP research pipeline:** Experiment with BIO-tagged skill extraction using spaCy PhraseMatcher and DistilBERT.
+- **Learning resources and quiz prototype:** Provide curated learning links and a lightweight self-assessment quiz in the research modules.
 
-## Model Evaluation
+## Application Screenshots
 
-The following results were obtained on the held-out test split. Precision, recall, and F1 are reported for skill-span extraction.
+Add screenshots of the deployed application here:
 
-| Model | Test Precision | Test Recall | Test F1 |
-|---|---:|---:|---:|
-| spaCy PhraseMatcher | 0.0892 | 0.1586 | 0.1142 |
-| DistilBERT (learning rate = 5e-5) | 0.4353 | 0.4345 | 0.4349 |
+- Dashboard overview
+- Skill assessment and gap visualization
+- Job-description analysis and requirement labels
 
-DistilBERT substantially outperformed the rule-based baseline, increasing test F1 from 0.1142 to 0.4349. This is an absolute improvement of approximately 32.07 percentage points.
-
-### Experimental Setup
-
-- **Transformer:** `distilbert-base-uncased`
-- **Selected learning rate:** `5e-5`
-- **Training epochs:** 3
-- **Maximum sequence length:** 256 tokens
-- **Evaluation approach:** Validation metrics used for model selection; the test split used for final evaluation.
-
-## Error Analysis
-
-Validation-set error analysis is used to investigate:
-
-- False-positive skill predictions.
-- Missed skill spans.
-- Partial or incorrect entity boundaries.
-- Potential challenges involving ambiguous phrases and longer expressions.
-
-The findings will inform future validation-based experiments. Test-set results are reserved for final reporting rather than iterative model tuning.
-
-## Learning Resource Catalog (Stage 10A)
-
-The `resources/` package provides a deterministic lookup function, `get_resources(skill: str)`, mapping canonical skills to curated documentation and tutorials.
-
-> **Note on Catalog Nature:** The learning resource catalog is **manually curated and static**. It is not AI-personalized, dynamically retrieved from external searches, or experimentally validated.
-
-Initial curated skills: Python, SQL, Power BI, Machine Learning, scikit-learn, and Docker.
-
-## Quiz Assessment Prototype (Stage 10B)
-
-The `assessment/` package provides a lightweight, deterministic quiz engine with 15 multiple-choice questions (5 Python, 5 SQL, 5 Power BI). It evaluates skill understanding and contrasts performance against a learner's 1–5 self-rating.
-
-> **Academic Prototype Disclaimer:** This short 5-question per skill quiz is an experimental self-reflection tool, **not** an accredited exam or validated predictor of professional employability.
-
-### Formulas
-- **Self-Rating Percentage:**
-  $$\text{self\_rating\_percent} = \frac{\text{rating} - 1}{4} \times 100$$
-- **Confidence Gap:**
-  $$\text{confidence\_gap} = \text{self\_rating\_percent} - \text{quiz\_percent}$$
-  - *Positive:* Self-rating is higher than quiz performance.
-  - *Negative:* Quiz performance is higher than self-rating.
-  - *Zero:* Both match.
-
-### Usage Example
-```python
-from assessment import get_questions, calculate_score, compare_confidence
-
-# 1. Fetch student-facing questions (answer key hidden)
-questions = get_questions("Python")
-
-# 2. Score submitted answers
-result = calculate_score("Python", {"py_01": "x = (1, 2, 3)"})
-
-# 3. Compare with self-rating (e.g., 4 out of 5)
-comparison = compare_confidence(rating=4, quiz_percent=result["score_percent"])
-print(comparison["interpretation"])
-```
-
-## Pipeline Integration (Stage 11)
-
-The [`skillgap_pipeline.py`](file:///c:/Users/goyal/skillgap/skillgap_pipeline.py) module orchestrates the complete workflow:
-1. Extraction of raw skill mentions from job descriptions and résumés.
-2. Canonical normalization to resolve naming variations and aliases.
-3. Gap analysis identifying missing skills via set difference.
-4. Frequency-based ranking of missing skills using mention counts.
-5. Attachment of curated educational resources.
-6. Optional skill quiz assessment and self-rating confidence comparison.
-
-> **Academic Prototype Notice:** This pipeline is an educational research tool. It does not output hiring recommendations, calculate hire/reject scores, store raw résumés, or claim validated prediction of workplace employability.
-
-### Model Inference Prerequisites
-Model training was conducted in Google Colab (checkpoint: `/content/drive/MyDrive/SkillGap/distilbert_experiments/distilbert_lr_5e-05/best_model`).
-To run live DistilBERT inference locally:
-1. Download or copy the `best_model` folder from Google Drive into `checkpoints/best_model/` (or provide `model_path` to `SkillExtractor`).
-2. If weights are not placed locally, calling `extract_skills()` raises a descriptive `FileNotFoundError`, while `analyze_job_match()` can still be run by providing a custom extraction callable `extract_fn`.
-
-### Usage Example
-```python
-from skillgap_pipeline import analyze_job_match, assess_skill
-
-# Example with a mock extraction function
-report = analyze_job_match(
-    job_description="Seeking a Python developer experienced with Docker and SQL.",
-    resume_text="Experienced in Python and SQL development.",
-    extract_fn=lambda text: ["Python", "Docker", "SQL"] if "Seeking" in text else ["Python", "SQL"]
-)
-
-print("Missing skills:", report["missing_skills"])
-# Output: ['Docker']
-
-print("Ranked missing:", report["ranked_missing_skills"])
-# Output: [{'skill': 'Docker', 'count': 1}]
-
-# Optional: assess understanding on a missing skill
-quiz_eval = assess_skill("Python", {"py_01": "x = (1, 2, 3)"}, self_rating=4)
-```
-
-### Running Tests
-To run the complete test suite across all modules:
-```bash
-python -m unittest discover -s tests -v
-```
-
-## Limitations
-
-The current model does not identify every skill correctly. Performance may be affected by ambiguous expressions, rare skills, entity-boundary errors, and annotation conventions. The current results establish a baseline for further research and do not demonstrate production readiness.
-
-## Future Work
-
-- Complete manual review of DistilBERT validation errors.
-- Improve skill extraction using validation-driven experiments.
-- Expand skill normalization to large-scale external taxonomies (such as ESCO or O*NET).
-- Compare extracted job requirements with assessed learner competencies.
-- Build a skill-gap analysis and personalized practice recommendation workflow.
-- Develop and evaluate the interactive self-assessment interface.
+Store the images in a folder such as `screenshots/` and update the paths to match the files committed to your repository.
 
 ## Technologies
 
 - Python
+- Streamlit
+- pandas
+- spaCy
 - PyTorch
 - Hugging Face Transformers and Datasets
-- spaCy
-- pandas
 - Google Colab
+
+The deployed dashboard and the experimental NLP pipeline are separate parts of the project. The live dashboard uses rule-based job-description analysis; it should not be interpreted as running the fine-tuned DistilBERT model.
+
+## Research Task and Dataset
+
+- **Task:** Skill extraction using BIO sequence tagging and token classification.
+- **Dataset:** Hugging Face [`jjzha/skillspan`](https://huggingface.co/datasets/jjzha/skillspan).
+- **Data splits:** Training, validation, and test splits provided by the dataset.
+- **Labeling approach:** `tags_knowledge`, using `B-SKILL`, `I-SKILL`, and `O` labels.
+
+### Approaches
+
+1. **Baseline:** spaCy `PhraseMatcher`, constructed using skill phrases from the training split.
+2. **Transformer:** Fine-tuned DistilBERT token-classification model.
+
+## Model Evaluation
+
+The following are the reported results on the held-out test split. Precision, recall, and F1 measure skill-span extraction performance.
+
+| Model | Test Precision | Test Recall | Test F1 |
+|---|---:|---:|---:|
+| spaCy PhraseMatcher | 0.0892 | 0.1586 | 0.1142 |
+| DistilBERT, learning rate = 5e-5 | 0.4353 | 0.4345 | 0.4349 |
+
+DistilBERT improved test F1 by approximately **0.3207**, or **32.07 percentage points**, compared with the PhraseMatcher baseline.
+
+### Experimental Setup
+
+- **Model:** `distilbert-base-uncased`
+- **Selected learning rate:** `5e-5`
+- **Training epochs:** 3
+- **Maximum sequence length:** 256 tokens
+- **Model selection:** Validation metrics
+- **Final evaluation:** Held-out test split
+
+These results reflect the reported experimental setup and do not establish production readiness or guarantee reliable extraction across arbitrary job descriptions.
+
+## Research Pipeline and Modules
+
+The research codebase includes the following components. Verify that each listed path exists in the repository before publishing this structure.
+
+| Component | Purpose |
+|---|---|
+| `preprocessing/` | Dataset loading, tokenization, and BIO label alignment |
+| `baseline/` | Skill phrase dictionary and spaCy PhraseMatcher baseline |
+| `model/` | DistilBERT training and evaluation code |
+| `inference/` | Token-classification inference and BIO span decoding |
+| `normalization/` | Canonical skill names and alias mapping |
+| `gap/` | Missing-skill identification and priority ranking |
+| `resources/` | Manually curated learning resources |
+| `assessment/` | Quiz scoring and self-rating confidence comparison |
+| `skillgap_pipeline.py` | Integration of extraction, gap analysis, ranking, and resources |
+| `experiments_log.csv` | Hyperparameter experiments and validation metrics |
+
+Model checkpoints and other large experiment artifacts are not required for the public Streamlit dashboard.
+
+## Requirement Status Classification
+
+The deployed dashboard includes a rule-based job-description analyzer that detects supported skill mentions and estimates their requirement status.
+
+Supported labels:
+
+- **Required** — the description explicitly indicates a requirement.
+- **Preferred** — the skill is desirable but not necessarily mandatory.
+- **Optional** — the description indicates that the skill is optional.
+- **Not required / excluded** — the description explicitly says the skill is not required.
+- **Mentioned — status unclear** — a skill is detected without a clear requirement signal.
+- **Mixed signals — review** — conflicting requirement signals are detected for the same skill.
+
+These labels are heuristic estimates, not definitive interpretations of job requirements. Complex wording, negation, and context may cause incorrect classifications. Users should review the original job description before relying on the results.
+
+### Example Test Cases
+
+| Job description | Expected result |
+|---|---|
+| Python is required. SQL is preferred. | Python: Required; SQL: Preferred |
+| Python is optional. SQL is required. | Python: Optional; SQL: Required |
+| Python is not required for this role, but SQL is preferred. | Python: Not required / excluded; SQL: Preferred |
+| Python is required. Python is optional. | Python: Mixed signals — review |
+
+These examples demonstrate selected functional tests, not a comprehensive accuracy evaluation.
+
+## Learning Resource Catalog
+
+The research `resources/` module provides a deterministic lookup function, `get_resources(skill: str)`, that maps canonical skills to manually curated documentation and tutorials.
+
+Initial curated skills include Python, SQL, Power BI, Machine Learning, scikit-learn, and Docker.
+
+**Limitation:** The catalog is static and manually curated. It is not dynamically retrieved from external searches or experimentally validated as an effective learning intervention.
+
+## Quiz Assessment Prototype
+
+The research `assessment/` module provides a deterministic quiz engine with 15 multiple-choice questions: five each for Python, SQL, and Power BI.
+
+It compares quiz performance with a learner's self-rating on a scale of 1–5.
+
+### Formulas
+
+**Self-rating percentage**
+
+\[
+\text{Self-rating percentage}
+=\frac{\text{rating}-1}{4}\times100
+\]
+
+**Confidence gap**
+
+\[
+\text{Confidence gap}
+=\text{Self-rating percentage}-\text{Quiz percentage}
+\]
+
+- Positive value: self-rating exceeds quiz performance.
+- Negative value: quiz performance exceeds self-rating.
+- Zero: both measures match.
+
+> **Prototype limitation:** This short quiz is an experimental self-reflection tool, not an accredited examination or a validated predictor of professional employability.
+
+## Pipeline Integration
+
+The research `skillgap_pipeline.py` module integrates the following workflow:
+
+1. Extract skill mentions from job descriptions and résumé text.
+2. Normalize skill names and resolve supported aliases.
+3. Identify missing skills through comparison of skill sets.
+4. Rank missing skills using mention counts.
+5. Attach curated learning resources.
+6. Optionally evaluate quiz performance and compare it with self-ratings.
+
+Model-based inference requires the trained model checkpoint to be available at the configured path. The deployed Streamlit dashboard is a separate application and should not be assumed to load this checkpoint.
+
+## Testing and Limitations
+
+The deployed dashboard has been manually tested for:
+
+- Skill-gap calculations and score validation.
+- Charts and recommendations.
+- CSV downloads.
+- Supported skill extraction.
+- Missing assessment handling.
+- Selected requirement-status edge cases, including negation and conflicting signals.
+
+The research pipeline and model experiments have separate evaluation results. Functional tests of the dashboard should not be interpreted as a comprehensive evaluation of NLP accuracy.
+
+### Current Limitations
+
+- Skill extraction relies on a fixed vocabulary and may miss skills outside configured patterns.
+- Requirement-status classification uses heuristic rules rather than a separately trained classifier.
+- Complex sentences, contextual language, and negation may produce incorrect labels.
+- The model's reported test F1 of 0.4349 indicates substantial room for improvement in skill-span extraction.
+- The static learning resource catalog is not dynamically personalized or experimentally validated.
+- The quiz prototype is not a validated measure of professional competence.
+
+## Privacy and Ethical Scope
+
+The public deployment package is intended to contain the Streamlit application and its required dependencies without saved model checkpoints or credentials used during experimentation. Verify the actual repository contents and deployment configuration before relying on this statement.
+
+SkillGap is designed for educational self-assessment and career planning. It is not intended for automated hiring decisions, candidate rejection, or validated predictions of workplace performance.
+
+## Running Locally
+
+For the deployed Streamlit dashboard, clone the repository and install its declared dependencies.
+
+```bash
+git clone https://github.com/dhaval-goyal/skillgap-ai-preview.git
+cd skillgap-ai-preview
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The repository's `requirements.txt` must contain the dependencies required by the current dashboard. The experimental NLP pipeline may require additional dependencies and a separately configured model checkpoint.
+
+## Future Work
+
+- Improve skill extraction through validation-driven experiments.
+- Analyze false positives, missed skill spans, and boundary errors.
+- Expand skill normalization using established skill taxonomies.
+- Improve requirement classification and test additional contextual edge cases.
+- Connect assessed competencies with missing job skills.
+- Expand learning resources and evaluate the usefulness of recommendations.
+- Conduct broader functional and usability testing.
 
 ## Project Status
 
-**In development.** Dataset exploration, baseline construction, DistilBERT fine-tuning, final test evaluation, Stage 8 skill normalization, Stage 9 gap analysis and priority ranking, Stage 10A learning resource catalog, Stage 10B quiz assessment prototype, and Stage 11 pipeline integration have been completed. Validation error analysis and user interface dashboard workflows remain ongoing.
+**Research prototype with a deployed Streamlit dashboard.**
+
+The project includes reported PhraseMatcher and DistilBERT experiments, skill normalization and gap-analysis modules, learning-resource and quiz prototypes, pipeline integration, and a manually tested dashboard. Further model evaluation, usability testing, and improvements to extraction and requirement classification remain areas for future work.
